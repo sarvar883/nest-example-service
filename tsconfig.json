@@ -20,6 +20,18 @@
         "forceConsistentCasingInFileNames": true,
         "noImplicitAny": false,
         "strictBindCallApply": false,
-        "noFallthroughCasesInSwitch": false
+        "noFallthroughCasesInSwitch": false,
+        "paths": {
+            "services": ["src/app/services"],
+            "services/*": ["src/app/services/*"],
+            "domain": ["src/domain"],
+            "domain/*": ["src/domain/*"],
+            "infrastructure": ["src/infrastructure"],
+            "infrastructure/*": ["src/infrastructure/*"],
+            "di": ["src/infrastructure/di"],
+            "di/*": ["src/infrastructure/di/*"]
+        },
+        "exclude": ["./typings/**/*", "node_modules", "coverage"],
+        "include": ["src", "test"]
     }
 }
