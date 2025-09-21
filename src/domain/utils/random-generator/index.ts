@@ -1,0 +1,1 @@
+export * from 'domain/utils/random-generator/service';
