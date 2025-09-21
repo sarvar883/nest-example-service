@@ -5,7 +5,7 @@ export const Symbols = generateSymbols({
         utils: asUniqueArray(['randomGenerator'] as const),
     },
     infrastructure: {
-
+        config: asUniqueArray(['general'] as const),
     },
     useCases: asUniqueArray([
 
