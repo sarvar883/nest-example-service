@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
+import { Milliseconds } from 'domain/common';
 
 export type Environment = 'development' | 'production';
 
@@ -17,12 +18,21 @@ export type DbConnectionCreds = {
     dbAuthSource: string;
 }
 
+export type WorkerPoolConfigs = {
+    filename: string;
+    threads: number;
+    idleTimeout: Milliseconds;
+    maxQueue: number;
+}
+
 export interface ConfigSchema {
     env: Environment;
 
     api: ApiConfigs;
 
     mongodb: DbConnectionCreds;
+
+    workerPool: WorkerPoolConfigs;
 }
 
 @Injectable()
@@ -33,14 +43,14 @@ export class ConfigService implements ConfigSchema {
         return this.configService.get<Environment>('ENVIRONMENT') || 'development';
     }
 
-    get api() {
+    get api(): ApiConfigs {
         return {
             host: this.configService.get<string>('API_HOST') || '127.0.0.1',
             port: this.configService.get<number>('API_PORT') || 3000,
         };
     }
 
-    get mongodb() {
+    get mongodb(): DbConnectionCreds {
         return {
             dbName: this.configService.get<string>('MONGO_DB_NAME') || 'admin',
             dbConnectionString: this.configService.get<string>('MONGO_DB_CONNECTION_STRING') || 'mongodb://localhost:27017',
@@ -48,6 +58,15 @@ export class ConfigService implements ConfigSchema {
             dbUsername: this.configService.get<string>('MONGO_DB_USERNAME') || 'admin',
             dbPassword: this.configService.get<string>('MONGO_DB_PASSWORD') || 'password',
             dbAuthSource: this.configService.get<string>('MONGO_DB_AUTH_SOURCE') || 'admin',
+        };
+    }
+
+    get workerPool(): WorkerPoolConfigs {
+        return {
+            filename: this.configService.get<string>('WORKER_POOL_FILENAME') || '../../app/services/worker/main.js',
+            threads: this.configService.get<number>('WORKER_POOL_THREADS') || 2,
+            idleTimeout: this.configService.get<Milliseconds>('WORKER_POOL_IDLE_TIMEOUT') || 20 * 1000,
+            maxQueue: this.configService.get<number>('WORKER_POOL_MAX_QUEUE') || 10,
         };
     }
 }

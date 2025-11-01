@@ -31,7 +31,7 @@
             "di": ["src/infrastructure/di"],
             "di/*": ["src/infrastructure/di/*"]
         },
-        "exclude": ["./typings/**/*", "node_modules", "coverage"],
+        "exclude": ["./typings/**/*", "node_modules", "build"],
         "include": ["src", "test"]
     }
 }

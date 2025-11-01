@@ -8,6 +8,7 @@ export const Symbols = generateSymbols({
         config: asUniqueArray(['general'] as const),
         db: asUniqueArray(['mongo'] as const),
         task: asUniqueArray(['service', 'repository', 'schema'] as const),
+        worker: asUniqueArray(['pool'] as const),
     },
     useCases: asUniqueArray([
 
