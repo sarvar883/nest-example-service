@@ -5,5 +5,19 @@
     "sourceRoot": "src",
     "compilerOptions": {
         "deleteOutDir": true
+    },
+    "projects": {
+        "api": {
+            "type": "application",
+            "root": "app/services/api",
+            "entryFile": "main",
+            "sourceRoot": "app/services/api"
+        },
+        "processor": {
+            "type": "application",
+            "root": "app/services/processor",
+            "entryFile": "main",
+            "sourceRoot": "app/services/processor"
+        }
     }
 }
