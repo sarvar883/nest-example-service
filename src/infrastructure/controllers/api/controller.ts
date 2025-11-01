@@ -7,16 +7,12 @@ import {
     InternalServerErrorException,
 } from '@nestjs/common';
 import { Symbols } from 'di/symbols';
-import { ConfigSchema } from 'infrastructure/config';
-import { ReceiptService, ReceiptModel } from 'domain/receipt';
+import type { ConfigSchema } from 'infrastructure/config';
 
 @Controller('/api')
 export class ApiController {
     constructor(
-       // @ts-ignore
        @Inject(Symbols.infrastructure.config.general) private readonly config: ConfigSchema,
-       // @ts-ignore
-       @Inject(Symbols.domain.receipt.service) private readonly receiptService: ReceiptService,
     ) {}
 
     @Post('route1')
@@ -30,7 +26,7 @@ export class ApiController {
         }
 
         try {
-            const result: ReceiptModel | null = await this.receiptService.createNew(body.amount);
+            const result = null;
 
             if (!result) {
                 throw new InternalServerErrorException({ message: 'Cannot create receipt' });
@@ -39,7 +35,7 @@ export class ApiController {
             return {
                 success: true,
                 data: {
-                    id: result._id,
+                    id: result,
                 },
             };
 

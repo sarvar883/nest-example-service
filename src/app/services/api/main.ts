@@ -10,6 +10,7 @@ async function bootstrap(): Promise<void> {
 
     const host: string = config.api.host;
     const port: number = config.api.port;
+    console.log(`[CPU Heavy service] Server started on port ${port}`);
     await app.listen(port, host);
 }
 

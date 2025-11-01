@@ -4,13 +4,8 @@ import { Symbols } from 'di/symbols';
 import { ConfigModule } from 'di/modules/infrastructure/config-module';
 import { ConfigSchema } from 'infrastructure/config';
 
-import { ReceiptModel } from 'domain/receipt';
-import { ReceiptSchema } from 'infrastructure/database/schemas/receipt';
-
-
-const data = [
-
-];
+import { TaskModel } from 'infrastructure/task';
+import { TaskSchema } from 'infrastructure/database/schemas/task';
 
 @Module({
     imports: [ConfigModule],
@@ -42,15 +37,15 @@ const data = [
             inject: [Symbols.infrastructure.config.general],
         },
         {
-            provide: Symbols.domain.receipt.schema,
-            useFactory: (connection: Connection): Model<ReceiptModel> => {
-                return connection.model(Symbols.domain.receipt.schema.toString(), ReceiptSchema);
+            provide: Symbols.infrastructure.task.schema,
+            useFactory: (connection: Connection): Model<TaskModel> => {
+                return connection.model(Symbols.infrastructure.task.schema.toString(), TaskSchema);
             },
             inject: [
                 Symbols.infrastructure.db.mongo,
             ],
         },
     ],
-    exports: [Symbols.infrastructure.db.mongo, Symbols.domain.receipt.schema,],
+    exports: [Symbols.infrastructure.db.mongo, Symbols.infrastructure.task.schema,],
 })
 export class MongoDBModule {}

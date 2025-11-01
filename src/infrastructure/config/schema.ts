@@ -1,3 +1,6 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService as NestConfigService } from '@nestjs/config';
+
 export type Environment = 'development' | 'production';
 
 export type ApiConfigs = {
@@ -22,22 +25,29 @@ export interface ConfigSchema {
     mongodb: DbConnectionCreds;
 }
 
-export function createConfig(): ConfigSchema {
-    return {
-        env: (process.env.ENVIRONMENT as Environment) || 'development',
+@Injectable()
+export class ConfigService implements ConfigSchema {
+    constructor(private configService: NestConfigService) {}
 
-        api: {
-            host: process.env.API_HOST || '127.0.0.1',
-            port: Number(process.env.API_PORT) || 3000,
-        },
+    get env(): Environment {
+        return this.configService.get<Environment>('ENVIRONMENT') || 'development';
+    }
 
-        mongodb: {
-            dbName: process.env.MONGO_DB_NAME || 'admin',
-            dbConnectionString: process.env.MONGO_DB_CONNECTION_STRING || 'mongodb://localhost:27017',
-            dbAuthEnabled: Boolean(process.env.MONGO_DB_AUTH_ENABLED) || true,
-            dbUsername: process.env.MONGO_DB_USERNAME || 'admin',
-            dbPassword: process.env.MONGO_DB_PASSWORD || 'password',
-            dbAuthSource: process.env.MONGO_DB_AUTH_SOURCE || 'admin',
-        },
-    };
+    get api() {
+        return {
+            host: this.configService.get<string>('API_HOST') || '127.0.0.1',
+            port: this.configService.get<number>('API_PORT') || 3000,
+        };
+    }
+
+    get mongodb() {
+        return {
+            dbName: this.configService.get<string>('MONGO_DB_NAME') || 'admin',
+            dbConnectionString: this.configService.get<string>('MONGO_DB_CONNECTION_STRING') || 'mongodb://localhost:27017',
+            dbAuthEnabled: this.configService.get<boolean>('MONGO_DB_AUTH_ENABLED') ?? true,
+            dbUsername: this.configService.get<string>('MONGO_DB_USERNAME') || 'admin',
+            dbPassword: this.configService.get<string>('MONGO_DB_PASSWORD') || 'password',
+            dbAuthSource: this.configService.get<string>('MONGO_DB_AUTH_SOURCE') || 'admin',
+        };
+    }
 }
