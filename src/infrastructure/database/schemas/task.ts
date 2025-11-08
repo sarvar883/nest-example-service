@@ -3,13 +3,21 @@ import { TaskModel } from 'infrastructure/task';
 
 export const TaskSchema = new Schema<TaskModel>(
     {
+        type: {
+            type: SchemaTypes.String,
+            required: true,
+        },
         state: {
             type: SchemaTypes.String,
             required: true,
         },
-        data: {
+        input: {
             type: SchemaTypes.Map,
             required: true,
+            default: {},
+        },
+        result: {
+            type: SchemaTypes.Map,
             default: {},
         },
         createdAt: {

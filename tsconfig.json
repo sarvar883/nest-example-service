@@ -24,6 +24,8 @@
         "paths": {
             "services": ["src/app/services"],
             "services/*": ["src/app/services/*"],
+            "usecases": ["src/app/usecases"],
+            "usecases/*": ["src/app/usecases/*"],
             "domain": ["src/domain"],
             "domain/*": ["src/domain/*"],
             "infrastructure": ["src/infrastructure"],

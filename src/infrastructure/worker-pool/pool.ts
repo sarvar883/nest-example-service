@@ -1,6 +1,7 @@
 import path from 'path';
 import { OnModuleInit } from '@nestjs/common';
 import { WorkerPoolConfigs } from 'infrastructure/config';
+import { QueueFullError } from 'infrastructure/worker-pool';
 
 export interface WorkerPool {
     run(taskId: string): Promise<void>;
@@ -33,10 +34,20 @@ export class WorkerPoolImpl implements WorkerPool, OnModuleInit {
     }
 
     async run(taskId: string): Promise<void> {
+        console.log('[WorkerPool] Running task ', taskId);
 
+        console.log('Threads: ', this.pool.threads.length);
+        console.log('queueSize: ', this.pool.queueSize);
+        console.log('queueLimit: ', this.pool.options.maxQueue);
+
+        if (this.acceptsTasks()) {
+            return this.pool.run(taskId);
+        }
+
+        throw new QueueFullError();
     }
 
     acceptsTasks(): boolean {
-        return true;
+        return this.pool.queueSize === 0 || this.pool.queueSize < this.pool.options.maxQueue;
     }
 }

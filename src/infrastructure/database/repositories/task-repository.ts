@@ -1,4 +1,5 @@
 import { Model, SortOrder } from 'mongoose';
+import { AnyObject } from 'domain/common';
 import {
     TaskRepository,
     TaskModel,
@@ -14,12 +15,24 @@ export class TaskRepositoryImpl implements TaskRepository {
         return this.model.findById(id);
     }
 
-    async getByStates(states: TaskState[]): Promise<TaskModel[]> {
+    async create(task: TaskModel): Promise<TaskModel> {
+        return this.model.create(task);
+    }
+
+    async getNext(states: TaskState[]): Promise<TaskModel | null> {
+        const currentDate = new Date();
+
         const query = {
             state: { $in: states },
+            processTime: { $lt: currentDate },
         };
 
-        return this.model.find(query);
+        const update = {
+            state: TaskState.Processing,
+            $inc: { attempts: 1 },
+        };
+
+        return this.model.findOneAndUpdate(query, update);
     }
 
     async getCurrentTasks(states: TaskState[]): Promise<TaskModel[]> {
@@ -31,9 +44,13 @@ export class TaskRepositoryImpl implements TaskRepository {
         };
 
         const sort = {
-            createdAt: 1 as SortOrder,
+            createdAt: 'asc' as SortOrder,
         };
 
         return this.model.find(query).sort(sort);
+    }
+
+    async update(taskId: string, update: AnyObject): Promise<void> {
+        await this.model.findByIdAndUpdate(taskId, update);
     }
 }
