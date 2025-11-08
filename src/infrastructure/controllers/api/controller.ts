@@ -1,18 +1,25 @@
 import {
     Controller,
     Inject,
+    Get,
     Post,
     Body,
     HttpCode,
     HttpStatus,
     BadRequestException,
+    NotFoundException,
     InternalServerErrorException,
 } from '@nestjs/common';
 import { Symbols } from 'di/symbols';
 import type { ConfigSchema } from 'infrastructure/config';
 import type { TaskService } from 'infrastructure/task';
-import { TaskModel, TaskType } from 'infrastructure/task';
-import type { Pbkdf2Body, Pbkdf2Response } from 'infrastructure/controllers/api';
+import { TaskModel, TaskType, TaskState } from 'infrastructure/task';
+import type {
+    Pbkdf2CreateBody,
+    Pbkdf2CreateResponse,
+    Pbkdf2CheckBody,
+    Pbkdf2CheckResponse,
+} from 'infrastructure/controllers/api';
 
 @Controller('/api')
 export class ApiController {
@@ -21,11 +28,11 @@ export class ApiController {
        @Inject(Symbols.infrastructure.task.service) private readonly taskService: TaskService,
     ) {}
 
-    @Post('/pbkdf2')
+    @Post('/pbkdf2/create')
     @HttpCode(HttpStatus.CREATED)
-    async pbkdf2(@Body() body: Pbkdf2Body): Promise<Pbkdf2Response> {
-        console.log('/pbkdf2 body =', body);
-        this.validatePbkdf2Input(body);
+    async pbkdf2Create(@Body() body: Pbkdf2CreateBody): Promise<Pbkdf2CreateResponse> {
+        console.log('/pbkdf2/create body =', body);
+        this.validatePbkdf2CreateInput(body);
 
         try {
             const result: TaskModel = await this.taskService.create({
@@ -38,12 +45,12 @@ export class ApiController {
             };
 
         } catch (e) {
-            console.log('[Controller] pbkdf2 e =', e);
+            console.log('[Controller] pbkdf2Create e =', e);
             throw new InternalServerErrorException({ message: 'Unknown Error' });
         }
     }
 
-    private validatePbkdf2Input(body): void | never {
+    private validatePbkdf2CreateInput(body: Pbkdf2CreateBody): void | never {
         if (!body) {
             throw new BadRequestException({ message: 'Invalid input data' });
         }
@@ -58,6 +65,59 @@ export class ApiController {
 
         if (!body.iterations || typeof body.iterations !== 'number') {
             throw new BadRequestException({ message: 'Iterations parameter is invalid' });
+        }
+    }
+
+    @Get('/pbkdf2/check')
+    @HttpCode(HttpStatus.OK)
+    async pbkdf2Check(@Body() body: Pbkdf2CheckBody): Promise<Pbkdf2CheckResponse> {
+        console.log('/pbkdf2/check body =', body);
+        this.validatePbkdf2CheckInput(body);
+
+        try {
+            const task: TaskModel | null = await this.taskService.getById(body.taskId);
+
+            if (!task) {
+                throw new NotFoundException({ message: 'Task not found' });
+            }
+
+            if (task.state === TaskState.Completed) {
+                return {
+                    taskId: body.taskId,
+                    state: 'finished',
+                    result: task.result,
+                };
+            }
+
+            if (task.state === TaskState.Error) {
+                return {
+                    taskId: body.taskId,
+                    state: 'error',
+                };
+            }
+
+            return {
+                taskId: body.taskId,
+                state: 'in_progress',
+            };
+
+        } catch (e) {
+            console.log('[Controller] pbkdf2Check e =', e);
+            if (e instanceof NotFoundException) {
+                throw e;
+            }
+
+            throw new InternalServerErrorException({ message: 'Unknown Error' });
+        }
+    }
+
+    private validatePbkdf2CheckInput(body: Pbkdf2CheckBody): void | never {
+        if (!body) {
+            throw new BadRequestException({ message: 'Invalid input data' });
+        }
+
+        if (!body.taskId || typeof body.taskId !== 'string') {
+            throw new BadRequestException({ message: 'TaskId parameter is invalid' });
         }
     }
 }
