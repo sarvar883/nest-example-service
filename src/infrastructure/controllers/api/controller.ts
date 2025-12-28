@@ -4,6 +4,7 @@ import {
     Get,
     Post,
     Body,
+    Query,
     HttpCode,
     HttpStatus,
     BadRequestException,
@@ -70,12 +71,12 @@ export class ApiController {
 
     @Get('/pbkdf2/check')
     @HttpCode(HttpStatus.OK)
-    async pbkdf2Check(@Body() body: Pbkdf2CheckBody): Promise<Pbkdf2CheckResponse> {
-        console.log('/pbkdf2/check body =', body);
-        this.validatePbkdf2CheckInput(body);
+    async pbkdf2Check(@Query('taskId') taskId: string): Promise<Pbkdf2CheckResponse> {
+        console.log('/pbkdf2/check taskId =', taskId);
+        this.validateTaskId(taskId);
 
         try {
-            const task: TaskModel | null = await this.taskService.getById(body.taskId);
+            const task: TaskModel | null = await this.taskService.getById(taskId);
 
             if (!task) {
                 throw new NotFoundException({ message: 'Task not found' });
@@ -83,7 +84,7 @@ export class ApiController {
 
             if (task.state === TaskState.Completed) {
                 return {
-                    taskId: body.taskId,
+                    taskId: taskId,
                     state: 'finished',
                     result: task.result,
                 };
@@ -91,13 +92,13 @@ export class ApiController {
 
             if (task.state === TaskState.Error) {
                 return {
-                    taskId: body.taskId,
+                    taskId: taskId,
                     state: 'error',
                 };
             }
 
             return {
-                taskId: body.taskId,
+                taskId: taskId,
                 state: 'in_progress',
             };
 
@@ -111,12 +112,12 @@ export class ApiController {
         }
     }
 
-    private validatePbkdf2CheckInput(body: Pbkdf2CheckBody): void | never {
-        if (!body) {
-            throw new BadRequestException({ message: 'Invalid input data' });
+    private validateTaskId(taskId: string): void | never {
+        if (!taskId) {
+            throw new BadRequestException({ message: 'TaskId parameter must be present' });
         }
 
-        if (!body.taskId || typeof body.taskId !== 'string') {
+        if (/^[0-9a-fA-F]{24}$/.test(taskId) === false) {
             throw new BadRequestException({ message: 'TaskId parameter is invalid' });
         }
     }

@@ -35,6 +35,15 @@ export class TaskRepositoryImpl implements TaskRepository {
         return this.model.findOneAndUpdate(query, update);
     }
 
+    async requeue(task: TaskModel, processTime: Date): Promise<void> {
+        const update = {
+            state: TaskState.Created,
+            processTime,
+        };
+
+        await this.model.findByIdAndUpdate(task._id, update);
+    }
+
     async getCurrentTasks(states: TaskState[]): Promise<TaskModel[]> {
         const currentDate = new Date();
 

@@ -12,7 +12,7 @@ export const TaskSchema = new Schema<TaskModel>(
             required: true,
         },
         input: {
-            type: SchemaTypes.Map,
+            type: SchemaTypes.Mixed,
             required: true,
             default: {},
         },

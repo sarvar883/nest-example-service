@@ -25,6 +25,15 @@ export type WorkerPoolConfigs = {
     maxQueue: number;
 }
 
+export type ProcessorConfigs = {
+    sleepTime: Milliseconds;
+}
+
+export type TaskConfigs = {
+    debounceAfterCreate: Milliseconds;
+    debounceForRetry: Milliseconds;
+}
+
 export interface ConfigSchema {
     env: Environment;
 
@@ -33,6 +42,10 @@ export interface ConfigSchema {
     mongodb: DbConnectionCreds;
 
     workerPool: WorkerPoolConfigs;
+
+    processor: ProcessorConfigs;
+
+    task: TaskConfigs;
 }
 
 @Injectable()
@@ -67,6 +80,19 @@ export class ConfigService implements ConfigSchema {
             threads: this.configService.get<number>('WORKER_POOL_THREADS') || 2,
             idleTimeout: this.configService.get<Milliseconds>('WORKER_POOL_IDLE_TIMEOUT') || 20 * 1000,
             maxQueue: this.configService.get<number>('WORKER_POOL_MAX_QUEUE') || 10,
+        };
+    }
+
+    get processor(): ProcessorConfigs {
+        return {
+            sleepTime: this.configService.get<number>('PROCESSOR_SLEEP_TIME') || 5 * 1000,
+        };
+    }
+
+    get task(): TaskConfigs {
+        return {
+            debounceAfterCreate: this.configService.get<number>('TASK_DEBOUNCE_AFTER_CREATE') || 10 * 1000,
+            debounceForRetry: this.configService.get<number>('TASK_DEBOUNCE_FOR_RETRY') || 60 * 1000,
         };
     }
 }

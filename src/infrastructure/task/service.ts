@@ -1,5 +1,6 @@
 import { AnyObject } from 'domain/common';
 import { DateUtils } from 'domain/utils/date';
+import { TaskConfigs } from 'infrastructure/config';
 import {
     TaskModel,
     TaskState,
@@ -11,6 +12,7 @@ export interface TaskService {
     getById(id: string): Promise<TaskModel | null>;
     create(params: TaskCreateParams): Promise<TaskModel>;
     getNext(): Promise<TaskModel | null>;
+    requeue(task: TaskModel): Promise<void>;
     markAsComplete(task: TaskModel, result: AnyObject): Promise<void>;
     markForRetry(task: TaskModel): Promise<void>;
     markError(task: TaskModel, error: AnyObject): Promise<void>;
@@ -18,6 +20,7 @@ export interface TaskService {
 
 export class TaskServiceImpl implements TaskService {
     constructor(
+        private readonly config: TaskConfigs,
         private readonly dateUtils: DateUtils,
         private readonly repository: TaskRepository,
     ) {}
@@ -34,7 +37,7 @@ export class TaskServiceImpl implements TaskService {
             state: TaskState.Created,
             input: params.input,
             createdAt: currentDate,
-            processTime: this.dateUtils.addMsToDate(currentDate, 10 * 1000),
+            processTime: this.dateUtils.addMsToDate(currentDate, this.config.debounceAfterCreate),
             attempts: 0,
         };
 
@@ -48,6 +51,11 @@ export class TaskServiceImpl implements TaskService {
         ];
 
         return this.repository.getNext(states);
+    }
+
+    async requeue(task: TaskModel): Promise<void> {
+        const newProcessTime: Date = this.dateUtils.addMsToDate(task.processTime, this.config.debounceForRetry);
+        return this.repository.requeue(task, newProcessTime);
     }
 
     async markAsComplete(task: TaskModel, result: AnyObject): Promise<void> {
@@ -64,7 +72,7 @@ export class TaskServiceImpl implements TaskService {
     async markForRetry(task: TaskModel): Promise<void> {
         const update = {
             state: TaskState.QueuedForRetrying,
-            processTime: this.dateUtils.addMsToDate(task.processTime, 60 * 1000),
+            processTime: this.dateUtils.addMsToDate(task.processTime, this.config.debounceForRetry),
             lastUpdatedAt: new Date(),
         };
 

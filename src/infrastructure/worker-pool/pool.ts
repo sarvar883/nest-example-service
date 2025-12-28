@@ -1,5 +1,6 @@
 import path from 'path';
 import { OnModuleInit } from '@nestjs/common';
+import Piscina from 'piscina';
 import { WorkerPoolConfigs } from 'infrastructure/config';
 import { QueueFullError } from 'infrastructure/worker-pool';
 
@@ -9,7 +10,7 @@ export interface WorkerPool {
 }
 
 export class WorkerPoolImpl implements WorkerPool, OnModuleInit {
-    private pool;
+    private pool: Piscina;
 
     constructor(
         private readonly config: WorkerPoolConfigs,
@@ -20,21 +21,16 @@ export class WorkerPoolImpl implements WorkerPool, OnModuleInit {
     }
 
     private async initialize(): Promise<void> {
-        const { default: Tinypool } = await import('tinypool');
-
-        this.pool = new Tinypool({
-            runtime: 'child_process',
+        this.pool = new Piscina({
             filename: path.resolve(__dirname, this.config.filename),
             minThreads: this.config.threads,
             maxThreads: this.config.threads,
-            idleTimeout: this.config.idleTimeout,
             maxQueue: this.config.maxQueue,
-            terminateTimeout: 30 * 1000,
         });
     }
 
     async run(taskId: string): Promise<void> {
-        console.log('[WorkerPool] Running task ', taskId);
+        console.log('[WorkerPool] Running taskId =', taskId);
 
         console.log('Threads: ', this.pool.threads.length);
         console.log('queueSize: ', this.pool.queueSize);
