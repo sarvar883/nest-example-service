@@ -23,8 +23,8 @@ export class WorkerPoolImpl implements WorkerPool, OnModuleInit {
     private async initialize(): Promise<void> {
         this.pool = new Piscina({
             filename: path.resolve(__dirname, this.config.filename),
-            minThreads: this.config.threads,
-            maxThreads: this.config.threads,
+            minThreads: this.config.minThreads,
+            maxThreads: this.config.maxThreads,
             maxQueue: this.config.maxQueue,
         });
     }

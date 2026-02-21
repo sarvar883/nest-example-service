@@ -12,7 +12,8 @@ import { WorkerPool, WorkerPoolImpl } from 'infrastructure/worker-pool/pool';
             useFactory: (cc: ConfigSchema): WorkerPool => {
                 const config: WorkerPoolConfigs = {
                     filename: cc.workerPool.filename,
-                    threads: cc.workerPool.threads,
+                    minThreads: cc.workerPool.minThreads,
+                    maxThreads: cc.workerPool.maxThreads,
                     idleTimeout: cc.workerPool.idleTimeout,
                     maxQueue: cc.workerPool.maxQueue,
                 };

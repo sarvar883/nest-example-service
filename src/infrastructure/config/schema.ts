@@ -20,7 +20,8 @@ export type DbConnectionCreds = {
 
 export type WorkerPoolConfigs = {
     filename: string;
-    threads: number;
+    minThreads: number;
+    maxThreads: number;
     idleTimeout: Milliseconds;
     maxQueue: number;
 }
@@ -77,8 +78,9 @@ export class ConfigService implements ConfigSchema {
     get workerPool(): WorkerPoolConfigs {
         return {
             filename: this.configService.get<string>('WORKER_POOL_FILENAME') || '../../app/services/worker/main.js',
-            threads: this.configService.get<number>('WORKER_POOL_THREADS') || 2,
-            idleTimeout: this.configService.get<Milliseconds>('WORKER_POOL_IDLE_TIMEOUT') || 20 * 1000,
+            minThreads: this.configService.get<number>('WORKER_POOL_MIN_THREADS') || 2,
+            maxThreads: this.configService.get<number>('WORKER_POOL_MAX_THREADS') || 2,
+            idleTimeout: this.configService.get<Milliseconds>('WORKER_POOL_IDLE_TIMEOUT') || 30 * 1000,
             maxQueue: this.configService.get<number>('WORKER_POOL_MAX_QUEUE') || 10,
         };
     }
