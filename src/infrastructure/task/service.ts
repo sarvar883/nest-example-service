@@ -82,7 +82,7 @@ export class TaskServiceImpl implements TaskService {
     async markError(task: TaskModel, error: AnyObject): Promise<void> {
         const update = {
             state: TaskState.Error,
-            error,
+            error: error?.toJSON?.() || error,
             erroredAt: new Date(),
             lastUpdatedAt: new Date(),
         };
