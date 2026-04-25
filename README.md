@@ -1,6 +1,6 @@
 This is an example Nest.js service. 
 
-You can get an idea how to structure Nest,js application, how to plug-in standard modules, like config, DB modules, business logic modules. infrastructure modules.
+You can get an idea how to structure a Nest.js application, how to plug-in standard modules, like config, DB modules, controllers, infrastructure modules. Also, notice how business-logic, controller and infrastructure modules are separated.
 
 This service handles CPU-intensive tasks in asynchronous way. If tasks result in error, retry feature is also implemented.
 It implements WorkerPool to handle many tasks in parallel.
