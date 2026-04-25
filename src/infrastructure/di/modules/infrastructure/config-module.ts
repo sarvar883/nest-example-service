@@ -12,13 +12,6 @@ import { ConfigService, ConfigSchema } from 'infrastructure/config';
             provide: Symbols.infrastructure.config.general,
             useClass: ConfigService,
         },
-        // {
-        //     provide: Symbols.infrastructure.config.general,
-        //     useFactory: (): ConfigSchema => {
-        //         return createConfig();
-        //     },
-        //     inject: [],
-        // },
     ],
     exports: [Symbols.infrastructure.config.general],
 })

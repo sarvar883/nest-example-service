@@ -6,6 +6,7 @@ async function bootstrap(): Promise<void> {
     app.enableShutdownHooks();
 
     await app.init();
+    console.log('[CPU Heavy service] Processor started');
 }
 
 bootstrap();

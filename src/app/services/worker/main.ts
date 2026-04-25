@@ -6,6 +6,7 @@ import { TaskProcessor } from 'infrastructure/task-processor';
 
 async function startWorker(): Promise<WorkerFunction> {
     const app = await NestFactory.create(AppModule);
+    app.enableShutdownHooks();
 
     const taskProcessor: TaskProcessor = app.get(Symbols.infrastructure.taskProcessor.service);
 

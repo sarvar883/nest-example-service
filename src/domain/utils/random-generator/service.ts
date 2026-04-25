@@ -7,10 +7,10 @@ export interface RandomGenerator {
 
 export class RandomGeneratorImpl implements RandomGenerator {
     string(length: number): string {
-        // randomBytes генерирует строку длиной в (length * 2) символов
+        // randomBytes generates a string with (length * 2) symbols
         const randomString: string = randomBytes(length).toString('hex');
 
-        // вернем отрезок нужной длины
+        // return a string with the required length
         return randomString.slice(0, length);
     }
 

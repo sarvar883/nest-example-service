@@ -5,7 +5,7 @@ export interface DateUtils {
 }
 
 export class DateUtilsImpl implements DateUtils {
-    // добавить миллисекунды к Дате и вернуть новую дату
+    // add milliseconds to the Date and return a new Date
     addMsToDate(date: Date, ms: Milliseconds): Date {
         const timeStamp: Timestamp = new Date(date).getTime();
 

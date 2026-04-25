@@ -1,8 +1,8 @@
 {
     "name": "nest1",
     "version": "0.0.1",
-    "description": "",
-    "author": "",
+    "description": "Scalable service to asynchronously handle CPU-intensive tasks",
+    "author": "Sarvar Sharapov",
     "private": true,
     "license": "UNLICENSED",
     "scripts": {

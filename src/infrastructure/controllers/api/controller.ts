@@ -25,8 +25,8 @@ import type {
 @Controller('/api')
 export class ApiController {
     constructor(
-       @Inject(Symbols.infrastructure.config.general) private readonly config: ConfigSchema,
-       @Inject(Symbols.infrastructure.task.service) private readonly taskService: TaskService,
+        @Inject(Symbols.infrastructure.config.general) private readonly config: ConfigSchema,
+        @Inject(Symbols.infrastructure.task.service) private readonly taskService: TaskService,
     ) {}
 
     @Post('/pbkdf2/create')
@@ -46,7 +46,6 @@ export class ApiController {
             };
 
         } catch (e) {
-            console.log('[Controller] pbkdf2Create e =', e);
             throw new InternalServerErrorException({ message: 'Unknown Error' });
         }
     }
@@ -72,7 +71,6 @@ export class ApiController {
     @Get('/pbkdf2/check')
     @HttpCode(HttpStatus.OK)
     async pbkdf2Check(@Query('taskId') taskId: string): Promise<Pbkdf2CheckResponse> {
-        console.log('/pbkdf2/check taskId =', taskId);
         this.validateTaskId(taskId);
 
         try {
@@ -103,7 +101,6 @@ export class ApiController {
             };
 
         } catch (e) {
-            console.log('[Controller] pbkdf2Check e =', e);
             if (e instanceof NotFoundException) {
                 throw e;
             }

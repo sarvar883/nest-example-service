@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule);
+    app.enableShutdownHooks();
 
     const config: ConfigSchema = app.get(Symbols.infrastructure.config.general);
 
