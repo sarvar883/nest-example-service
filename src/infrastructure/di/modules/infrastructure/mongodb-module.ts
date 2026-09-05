@@ -41,11 +41,9 @@ import { TaskSchema } from 'infrastructure/database/schemas/task';
             useFactory: (connection: Connection): Model<TaskModel> => {
                 return connection.model(Symbols.infrastructure.task.schema.toString(), TaskSchema);
             },
-            inject: [
-                Symbols.infrastructure.db.mongo,
-            ],
+            inject: [Symbols.infrastructure.db.mongo],
         },
     ],
-    exports: [Symbols.infrastructure.db.mongo, Symbols.infrastructure.task.schema,],
+    exports: [Symbols.infrastructure.db.mongo, Symbols.infrastructure.task.schema],
 })
 export class MongoDBModule {}

@@ -1,5 +1,4 @@
 import path from 'path';
-import { OnModuleInit } from '@nestjs/common';
 import Piscina from 'piscina';
 import { WorkerPoolConfigs } from 'infrastructure/config';
 import { QueueFullError } from 'infrastructure/worker-pool';
@@ -9,18 +8,10 @@ export interface WorkerPool {
     acceptsTasks(): boolean;
 }
 
-export class WorkerPoolImpl implements WorkerPool, OnModuleInit {
+export class WorkerPoolImpl implements WorkerPool {
     private pool: Piscina;
 
-    constructor(
-        private readonly config: WorkerPoolConfigs,
-    ) {}
-
-    async onModuleInit(): Promise<void> {
-        await this.initialize();
-    }
-
-    private async initialize(): Promise<void> {
+    constructor(private readonly config: WorkerPoolConfigs) {
         this.pool = new Piscina({
             filename: path.resolve(__dirname, this.config.filename),
             minThreads: this.config.minThreads,

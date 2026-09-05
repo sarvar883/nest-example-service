@@ -60,15 +60,21 @@ export class ConfigService implements ConfigSchema {
     get api(): ApiConfigs {
         return {
             host: this.configService.get<string>('API_HOST') || '127.0.0.1',
-            port: this.configService.get<number>('API_PORT') || 3000,
+            port: Number(this.configService.get<number>('API_PORT')) || 3000,
         };
     }
 
     get mongodb(): DbConnectionCreds {
+        let authEnabled: boolean = true;
+
+        if (this.configService.get('MONGO_DB_AUTH_ENABLED') === 'false') {
+            authEnabled = false;
+        }
+
         return {
             dbName: this.configService.get<string>('MONGO_DB_NAME') || 'admin',
             dbConnectionString: this.configService.get<string>('MONGO_DB_CONNECTION_STRING') || 'mongodb://localhost:27017',
-            dbAuthEnabled: this.configService.get<boolean>('MONGO_DB_AUTH_ENABLED') ?? true,
+            dbAuthEnabled: authEnabled,
             dbUsername: this.configService.get<string>('MONGO_DB_USERNAME') || 'admin',
             dbPassword: this.configService.get<string>('MONGO_DB_PASSWORD') || 'password',
             dbAuthSource: this.configService.get<string>('MONGO_DB_AUTH_SOURCE') || 'admin',
@@ -78,23 +84,23 @@ export class ConfigService implements ConfigSchema {
     get workerPool(): WorkerPoolConfigs {
         return {
             filename: this.configService.get<string>('WORKER_POOL_FILENAME') || '../../app/services/worker/main.js',
-            minThreads: this.configService.get<number>('WORKER_POOL_MIN_THREADS') || 2,
-            maxThreads: this.configService.get<number>('WORKER_POOL_MAX_THREADS') || 2,
-            idleTimeout: this.configService.get<Milliseconds>('WORKER_POOL_IDLE_TIMEOUT') || 30 * 1000,
-            maxQueue: this.configService.get<number>('WORKER_POOL_MAX_QUEUE') || 10,
+            minThreads: Number(this.configService.get<number>('WORKER_POOL_MIN_THREADS')) || 2,
+            maxThreads: Number(this.configService.get<number>('WORKER_POOL_MAX_THREADS')) || 2,
+            idleTimeout: Number(this.configService.get<Milliseconds>('WORKER_POOL_IDLE_TIMEOUT')) || 30 * 1000,
+            maxQueue: Number(this.configService.get<number>('WORKER_POOL_MAX_QUEUE')) || 10,
         };
     }
 
     get processor(): ProcessorConfigs {
         return {
-            sleepTime: this.configService.get<number>('PROCESSOR_SLEEP_TIME') || 5 * 1000,
+            sleepTime: Number(this.configService.get<number>('PROCESSOR_SLEEP_TIME')) || 5 * 1000,
         };
     }
 
     get task(): TaskConfigs {
         return {
-            debounceAfterCreate: this.configService.get<number>('TASK_DEBOUNCE_AFTER_CREATE') || 10 * 1000,
-            debounceForRetry: this.configService.get<number>('TASK_DEBOUNCE_FOR_RETRY') || 60 * 1000,
+            debounceAfterCreate: Number(this.configService.get<number>('TASK_DEBOUNCE_AFTER_CREATE')) || 10 * 1000,
+            debounceForRetry: Number(this.configService.get<number>('TASK_DEBOUNCE_FOR_RETRY')) || 60 * 1000,
         };
     }
 }

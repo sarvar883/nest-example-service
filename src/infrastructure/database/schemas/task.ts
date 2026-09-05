@@ -17,7 +17,7 @@ export const TaskSchema = new Schema<TaskModel>(
             default: {},
         },
         result: {
-            type: SchemaTypes.Map,
+            type: SchemaTypes.Mixed,
             default: {},
         },
         createdAt: {
@@ -42,7 +42,7 @@ export const TaskSchema = new Schema<TaskModel>(
             default: 0,
         },
         error: {
-            type: SchemaTypes.Map,
+            type: SchemaTypes.Mixed,
             default: null,
         },
         erroredAt: {
